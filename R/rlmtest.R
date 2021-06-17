@@ -30,13 +30,13 @@ rlmtest <- function(y,
   # regression
   if (is.na(x[1])) {
     if (CPP) {
-      ls.fit <- fLm(matrix(rep(1,n),ncol=1),y)
+      ls.fit <- fLM(matrix(rep(1,n),ncol=1),y)
     } else {
       ls.fit <- lm(y ~ 1)
     }
   } else {
     if (CPP) {
-      ls.fit <- fLm(cbind(1,x),y)
+      ls.fit <- fLM(cbind(1,x),y)
     } else {
       ls.fit <- lm(y ~ x)
     }
@@ -54,7 +54,7 @@ rlmtest <- function(y,
 
   # run autoregressive ls.fit of a.order on res.sq
   if (CPP) {
-    ar.fit <- fLm(cbind(1,res.sq.demean[1:(n-a.order)]), res.sq.demean[(a.order+1):n])
+    ar.fit <- fLM(cbind(1,res.sq.demean[1:(n-a.order)]), res.sq.demean[(a.order+1):n])
   } else {
     ar.fit <- lm(res.sq.demean[(a.order+1):n]~res.sq.demean[1:(n-a.order)])
   }
@@ -92,13 +92,13 @@ rlmtest <- function(y,
       # regression ls.fit
       if (is.na(x[1])) {
         if (CPP) {
-          ls.fit.bs <- fLm(matrix(rep(1,n),ncol=1),y.bs)
+          ls.fit.bs <- fLM(matrix(rep(1,n),ncol=1),y.bs)
         } else {
           ls.fit.bs <- lm(y.bs ~ 1)
         }
       } else {
         if (CPP) {
-          ls.fit.bs <- fLm(cbind(1,x),y.bs)
+          ls.fit.bs <- fLM(cbind(1,x),y.bs)
         } else {
           ls.fit.bs <- lm(y.bs ~ x)
         }
@@ -119,7 +119,7 @@ rlmtest <- function(y,
 
       }
       # ar.fit.bs <- lm(res.sq.demean.bs[(a.order+1):n]~res.sq.demean.bs[1:(n-a.order)])
-      ar.fit.bs <- fLm(cbind(1,res.sq.demean.bs[1:(n-a.order)]), res.sq.demean.bs[(a.order+1):n])
+      ar.fit.bs <- fLM(cbind(1,res.sq.demean.bs[1:(n-a.order)]), res.sq.demean.bs[(a.order+1):n])
       # AR(a.order) residuals
       ee.bs <- ar.fit.bs$residuals
 
@@ -140,25 +140,26 @@ rlmtest <- function(y,
   }
 }
 
+# library(RcppArmadillo)
+# Rcpp::sourceCpp("./src/Code.cpp")
 
-
-if (!require(inline)) install.packages('inline')
-library(inline)
-src <- '
-Rcpp::NumericMatrix Xr(Xs);
-Rcpp::NumericVector yr(ys);
-int n = Xr.nrow(), k = Xr.ncol();
-arma::mat X(Xr.begin(), n, k, false);
-arma::colvec y(yr.begin(), yr.size(), false);
-int df = n - k;
-
-// fit model y ~ X, extract residuals
-arma::colvec coef = arma::solve(X, y);
-arma::colvec fit = X*coef;
-arma::colvec res = y - X*coef;
-
-return Rcpp::List::create(Rcpp::Named("coefficients") = coef,
-Rcpp::Named("fitted.values") = fit,
-Rcpp::Named("residuals") = res);
-'
-fLm <- cxxfunction(signature(Xs="numeric", ys="numeric"), src, plugin="RcppArmadillo")
+# if (!require(inline)) install.packages('inline')
+# library(inline)
+# src <- '
+# Rcpp::NumericMatrix Xr(Xs);
+# Rcpp::NumericVector yr(ys);
+# int n = Xr.nrow(), k = Xr.ncol();
+# arma::mat X(Xr.begin(), n, k, false);
+# arma::colvec y(yr.begin(), yr.size(), false);
+# int df = n - k;
+#
+# // fit model y ~ X, extract residuals
+# arma::colvec coef = arma::solve(X, y);
+# arma::colvec fit = X*coef;
+# arma::colvec res = y - X*coef;
+#
+# return Rcpp::List::create(Rcpp::Named("coefficients") = coef,
+# Rcpp::Named("fitted.values") = fit,
+# Rcpp::Named("residuals") = res);
+# '
+# fLm <- cxxfunction(signature(Xs="numeric", ys="numeric"), src, plugin="RcppArmadillo")
