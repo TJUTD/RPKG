@@ -2,11 +2,12 @@ Package: rlmtest
 Title: Robust Lagrange Multiplier Test for Detecting ARCH/GARCH Effect
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+    c(person("Meichen", "Huang", 
+                    role = c("aut", "cre"),
+                    comment = c(ORCID = "0000-0001-7936-4285"),
+                    email="meichen.huang@utdallas.edu"),
+             person("Yulia R.", "Gel", role = "aut"),
+             person("Tian", "Jiang", role = "ctb"))
 Description: What the package does (one paragraph).
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
@@ -18,3 +19,5 @@ LinkingTo:
     Rcpp, RcppArmadillo
 Imports: 
     Rcpp
+Depends: 
+    R (>= 2.10)
